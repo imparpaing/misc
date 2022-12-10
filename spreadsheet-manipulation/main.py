@@ -5,11 +5,15 @@
 from bs4 import BeautifulSoup
 
 import requests
+import re
+import os
 
 # Program variables
 
+temp_content_path = "./content.txt"
+
 base_url = 'https://stockx.com/nike-air-force-1-low-supreme-box-logo-white'
-base_size = 14
+base_size = 9
 
 # Request headers
 
@@ -42,21 +46,32 @@ def request_page_content(url):
 def process_page_content(html):
     soup = BeautifulSoup(html, "html.parser")
     find_pid = soup.find_all("div", {"class": "chakra-container css-vp2g1e"})
-
-    # Save product info
-    product_brand = ""
-    product_model = ""
-    product_sku = ""
-    product_price = ""
+    page_title = soup.find('title').text
 
     # Write content to file
-    f = open("content.txt", "w")
-    # ...
+    if not os.path.isfile(temp_content_path):
+        with open(temp_content_path, "w") as f: print(find_pid, file=f)
+        print("Creating a file...")
 
-    print(find_pid, file=f)
+    # Read content from file
+    f = open(temp_content_path, "r")
+    div_content = f.read()
+
+    # Save product info
+    product_brand = re.findall(r'\"Brand\",\"name\":.+?\"', div_content)
+    product_model = re.findall(r'\"model\":.+?\"', div_content)
+    product_price = re.findall(r'\"price\":\d+', div_content)
+    product_sku = re.findall(r'\w{6}-\w{3}', page_title)
 
     # Close the file
     f.close()
+
+    # Remove the file
+    if os.path.isfile(temp_content_path):
+        os.remove(temp_content_path)
+        print("Removing temp content file...")
+
+    print(f"\nBrand: {product_brand}\nModel: {product_model}\nPrice: {product_price}\nSKU: {product_sku}")
 
 def main():
     url = form_url() # Form request URL to the product page
