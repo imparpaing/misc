@@ -51,7 +51,7 @@ def process_page_content(html):
     # Write content to file
     if not os.path.isfile(temp_content_path):
         with open(temp_content_path, "w") as f: print(find_pid, file=f)
-        print("Creating a file...")
+        print("[ SYSTEM ] Creating temp file...")
 
     # Read content from file
     f = open(temp_content_path, "r")
@@ -63,15 +63,20 @@ def process_page_content(html):
     product_price = re.findall(r'\"price\":\d+', div_content)
     product_sku = re.findall(r'\w{6}-\w{3}', page_title)
 
+    # Trim saved product info
+    product_brand = re.findall(r'(?<=\":\")(.*?)(?=\")', str(product_brand))
+    product_model = re.findall(r'(?<=\":\")(.*?)(?=\")', str(product_model))
+    product_price = re.findall(r'(?<=\"price\":)(\d+)', str(product_price))
+
     # Close the file
     f.close()
 
     # Remove the file
     if os.path.isfile(temp_content_path):
         os.remove(temp_content_path)
-        print("Removing temp content file...")
+        print("[ SYSTEM ] Removing temp content file...")
 
-    print(f"\nBrand: {product_brand}\nModel: {product_model}\nPrice: {product_price}\nSKU: {product_sku}")
+    print(f"\nBrand: {product_brand[0]}\nModel: {product_model[0]}\nPrice: {product_price[0]}\nSKU: {product_sku[0]}")
 
 def main():
     url = form_url() # Form request URL to the product page
