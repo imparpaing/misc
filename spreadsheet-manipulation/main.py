@@ -58,15 +58,10 @@ def process_page_content(html):
     div_content = f.read()
 
     # Save product info
-    product_brand = re.findall(r'\"Brand\",\"name\":.+?\"', div_content)
-    product_model = re.findall(r'\"model\":.+?\"', div_content)
-    product_price = re.findall(r'\"price\":\d+', div_content)
+    product_brand = re.findall(r'(?<=\"Brand\",\"name\":\")(.*?)(?=\")', div_content)
+    product_model = re.findall(r'(?<=\"model\":\")(.*?)(?=\")', div_content)
+    product_price = re.findall(r'(?<=\"price\":)(\d+)', div_content)
     product_sku = re.findall(r'\w{6}-\w{3}', page_title)
-
-    # Trim saved product info
-    product_brand = re.findall(r'(?<=\":\")(.*?)(?=\")', str(product_brand))
-    product_model = re.findall(r'(?<=\":\")(.*?)(?=\")', str(product_model))
-    product_price = re.findall(r'(?<=\"price\":)(\d+)', str(product_price))
 
     # Close the file
     f.close()
