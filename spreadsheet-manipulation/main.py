@@ -7,10 +7,12 @@ from bs4 import BeautifulSoup
 import requests
 import re
 import os
+from openpyxl import Workbook, load_workbook
 
 # Program variables
 
 temp_content_path = "./content.txt"
+stock_spreadsheet_path = "./stock.xlsx"
 
 base_url = 'https://stockx.com/nike-air-force-1-low-supreme-box-logo-white'
 base_size = 9
@@ -71,12 +73,47 @@ def process_page_content(html):
         os.remove(temp_content_path)
         print("[ SYSTEM ] Removing temp content file...")
 
-    print(f"\nBrand: {product_brand[0]}\nModel: {product_model[0]}\nPrice: {product_price[0]}\nSKU: {product_sku[0]}")
+    print(f"\nBrand: {product_brand[0]}\nModel: {product_model[0]}\nPrice: {product_price[0]}\nSKU: {product_sku[0]}\n")
+
+    # Place product info in a list, return the list with product info
+    product_info = [product_brand, product_model, product_price, product_sku]
+    return product_info
+
+def fill_spreadsheet(info):
+    # Check if spreadsheet exists
+    if not os.path.isfile(stock_spreadsheet_path):
+        print("[ ALERT ]  Stock spreadsheet not found!")
+        print("[ SYSTEM ] Creating stock.xlsx file...\n")
+
+        # Define workbook
+        workbook = Workbook()
+        sheet = workbook.active
+
+        # Fill sheet header
+        sheet["A1"] = "Date"
+        sheet["B1"] = "Brand"
+        sheet["C1"] = "Model"
+        sheet["D1"] = "Price"
+        sheet["E1"] = "SKU"
+
+        # Write the workbook
+        workbook.save(filename=stock_spreadsheet_path)
+    else:
+        print("[ ALERT ] Found stock.xlsx file!\n")
+
+        # Load workbook
+        workbook = load_workbook(stock_spreadsheet_path)
+        sheet = workbook.active
+
+        # Print spreadsheet content
+        for value in sheet.iter_rows(values_only=True):
+            print(value)
 
 def main():
     url = form_url() # Form request URL to the product page
     html = request_page_content(url) # Send request to the URL and get page content
-    process_page_content(html)
+    info_list = process_page_content(html) # Get product info
+    fill_spreadsheet(info_list) # Add product info to spreadsheet
     
 if __name__ == '__main__':
     main()
