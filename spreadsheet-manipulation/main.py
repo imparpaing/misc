@@ -8,6 +8,7 @@ import requests
 import re
 import os
 from openpyxl import Workbook, load_workbook
+from datetime import date
 
 # Program variables
 
@@ -80,6 +81,10 @@ def process_page_content(html):
     return product_info
 
 def write_spreadsheet(item_list_content):
+    # Add current date to info list
+    product_date = date.today().strftime("%m.%d.%y")
+    item_list_content.insert(0, product_date)
+
     # Check if spreadsheet exists
     if not os.path.isfile(stock_spreadsheet_path):
         print("[ ALERT ]  Stock spreadsheet not found!")
