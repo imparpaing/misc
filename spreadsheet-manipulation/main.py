@@ -76,10 +76,50 @@ def process_page_content(html):
     print(f"\nBrand: {product_brand[0]}\nModel: {product_model[0]}\nPrice: {product_price[0]}\nSKU: {product_sku[0]}\n")
 
     # Place product info in a list, return the list with product info
-    product_info = [product_brand, product_model, product_price, product_sku]
+    product_info = [product_brand[0], product_model[0], product_price[0], product_sku[0]]
     return product_info
 
-def fill_spreadsheet(info):
+def write_spreadsheet(item_list_content):
+    # Check if spreadsheet exists
+    if not os.path.isfile(stock_spreadsheet_path):
+        print("[ ALERT ]  Stock spreadsheet not found!")
+        print("[ SYSTEM ] Creating stock.xlsx file...\n")
+
+        # Define workbook
+        workbook = Workbook()
+        sheet = workbook.active
+
+        # Fill sheet header
+        sheet["A1"] = "Date"
+        sheet["B1"] = "Brand"
+        sheet["C1"] = "Model"
+        sheet["D1"] = "Price"
+        sheet["E1"] = "SKU"
+
+        # Create the spreadsheet
+        workbook.save(filename=stock_spreadsheet_path)
+    else:
+        print("[ ALERT ] Found stock.xlsx file!\n")
+        print("[ SYSTEM ] Writing to file...")
+
+        # Load workbook
+        workbook = load_workbook(stock_spreadsheet_path)
+        sheet = workbook.active
+
+        # Get last row index
+        maxRowSrcFile = sheet.max_row
+
+        # Write output to last line
+        iter_col = 1
+        for data in item_list_content:
+            sheet.cell(row=maxRowSrcFile+1, column=iter_col, value=data)
+            iter_col += 1
+
+        # Save workbook
+        workbook.save(filename=stock_spreadsheet_path)
+        print("[ ALERT ] Done")
+
+def read_spreadsheet():
     # Check if spreadsheet exists
     if not os.path.isfile(stock_spreadsheet_path):
         print("[ ALERT ]  Stock spreadsheet not found!")
@@ -105,6 +145,11 @@ def fill_spreadsheet(info):
         workbook = load_workbook(stock_spreadsheet_path)
         sheet = workbook.active
 
+        # Print last row & last col
+        maxRowSrcFile = sheet.max_row
+        maxColSrcFile = sheet.max_column
+        print(f"Rows found: {maxRowSrcFile} | Cols found: {maxColSrcFile}\n")
+
         # Print spreadsheet content
         for value in sheet.iter_rows(values_only=True):
             print(value)
@@ -113,7 +158,8 @@ def main():
     url = form_url() # Form request URL to the product page
     html = request_page_content(url) # Send request to the URL and get page content
     info_list = process_page_content(html) # Get product info
-    fill_spreadsheet(info_list) # Add product info to spreadsheet
+    write_spreadsheet(info_list) # Write to spreadsheet
+    read_spreadsheet() # Read spreadsheet content
     
 if __name__ == '__main__':
     main()
