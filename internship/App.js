@@ -23,7 +23,7 @@ module.exports = main;
 
 /*******************************************
  *                                         *
- * REPLACE 'sn' WITH ACTIAL PRODUCT NUMBER *
+ * REPLACE 'sn' WITH ACTUAL PRODUCT NUMBER *
  *                                         *
  *******************************************/
 
