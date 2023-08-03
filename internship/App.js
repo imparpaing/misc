@@ -1,5 +1,25 @@
+#!/usr/bin/env node
+
 'use strict';
 const axios = require('axios');
+const program = require('commander');
+
+program.version('0.0.1');
+program
+    .option('-sn, --serialNumber <serialNumber>', 'check product with the specified serial number')
+    .action((option) => {
+        const serialNumber = option.serialNumber;
+        if (!serialNumber)
+            sendWarning();
+        main(serialNumber);
+    });
+
+program.parse(process.argv);
+
+function sendWarning() {
+    console.error('Please provide a valid serial number using the -sn option');
+    process.exit(1);
+};
 
 async function main(serialNumber) {
     const requestBody = { serialNumber: serialNumber };
@@ -17,16 +37,4 @@ async function main(serialNumber) {
     } catch (error) {
         console.error(error.message);
     }
-}
-
-module.exports = main;
-
-/*******************************************
- *                                         *
- * REPLACE 'sn' WITH ACTUAL PRODUCT NUMBER *
- *                                         *
- *******************************************/
-
-if (require.main === module) {
-    main('sn');
 }
