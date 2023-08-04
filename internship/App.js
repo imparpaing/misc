@@ -3,8 +3,9 @@
 'use strict';
 const axios = require('axios');
 const program = require('commander');
+const packageJson = require('./package.json');
 
-program.version('0.0.1');
+program.version(packageJson.version);
 program
     .option('-sn, --serialNumber <serialNumber>', 'check product with the specified serial number')
     .action((option) => {
@@ -15,6 +16,11 @@ program
     });
 
 program.parse(process.argv);
+
+/*
+    TODO: Add Featuers
+        - Create & update .xlsx with sn's as arguments
+*/
 
 function sendWarning() {
     console.error('Please provide a valid serial number using the -sn option');
