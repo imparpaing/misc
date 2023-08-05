@@ -18,7 +18,7 @@ program
 program.parse(process.argv);
 
 /*
-    TODO: Add Featuers
+    TODO: Features
         - Create & update .xlsx with sn's as arguments
 */
 
