@@ -2,12 +2,13 @@
 
 const ExcelJS = require('exceljs');
 
-// TODO: Fix date output offset (+2hrs)
-
 async function setupSpreadsheet() {
     const workbook = new ExcelJS.Workbook();
     workbook.creator = 'Lenovo scraper by @mikeatta';
-    workbook.created = new Date();
+
+    const timestamp = new Date();
+    timestamp.setMinutes(timestamp.getMinutes() - timestamp.getTimezoneOffset());
+    workbook.created = timestamp;
     
     const sheet = workbook.addWorksheet('Notebooks');
     workbook.worksheets[0];
