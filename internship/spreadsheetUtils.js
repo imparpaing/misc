@@ -9,6 +9,7 @@ async function setupSpreadsheet() {
     const timestamp = new Date();
     timestamp.setMinutes(timestamp.getMinutes() - timestamp.getTimezoneOffset());
     workbook.created = timestamp;
+    workbook.modified = timestamp;
     
     const sheet = workbook.addWorksheet('Notebooks');
     workbook.worksheets[0];
